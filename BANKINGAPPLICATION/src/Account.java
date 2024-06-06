@@ -1,23 +1,13 @@
-public class Account {
-    private String accountNumber;
-    private String accountHolderName;
-    private double balance;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
-    public Account(String accountNumber, String accountHolderName, double balance) {
-        this.accountNumber = accountNumber;
-        this.accountHolderName = accountHolderName;
-        this.balance = balance;
-    }
+public class DatabaseConnection {
+    private static final String URL = "jdbc:mysql://localhost:3306/banking_app";
+    private static final String USER = "root";
+    private static final String PASSWORD = "@TaAs1587@";
 
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public String getAccountHolderName() {
-        return accountHolderName;
-    }
-
-    public double getBalance() {
-        return balance;
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }
