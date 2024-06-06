@@ -2,6 +2,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class AccountService {
 
@@ -158,6 +159,33 @@ public class AccountService {
             }
         }
     }
+    public static String createAccount(String accountHolderName, double initialDeposit) throws SQLException {
+        String insertAccountQuery = "INSERT INTO accounts (account_number, account_holder_name, balance) VALUES (?, ?, ?)";
+        String getAccountNumberQuery = "SELECT account_number FROM accounts WHERE account_holder_name = ?";
+
+        String accountNumber = UUID.randomUUID().toString().substring(0, 20);  // Generate a unique account number
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement insertAccountStmt = connection.prepareStatement(insertAccountQuery);
+             PreparedStatement getAccountNumberStmt = connection.prepareStatement(getAccountNumberQuery)) {
+
+            insertAccountStmt.setString(1, accountNumber);
+            insertAccountStmt.setString(2, accountHolderName);
+            insertAccountStmt.setDouble(3, initialDeposit);
+            insertAccountStmt.executeUpdate();
+
+            getAccountNumberStmt.setString(1, accountHolderName);
+            ResultSet resultSet = getAccountNumberStmt.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("account_number");
+            } else {
+                throw new SQLException("Failed to retrieve account number.");
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to create account.", e);
+        }
+    }
+
 
     // New method to fetch account number by account holder's name
     public static String getAccountNumberByName(String accountHolderName) throws SQLException {
